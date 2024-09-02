@@ -4,51 +4,83 @@ import 'package:jambapp/core/constants/colors.dart';
 import 'package:jambapp/data/models/gameResult.dart';
 import 'package:jambapp/data/repository/gameStorage.dart';
 import 'package:jambapp/ui/widgets/gamePage.dart';
+import 'package:jambapp/ui/widgets/resultsPage.dart';
 
 class StartPage extends StatelessWidget {
   const StartPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'JAMB',
-          style: TextStyle(
-            fontFamily: "MyCustomFont",
-            fontWeight: FontWeight.w900,
-          ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text(
+        'JAMB',
+        style: TextStyle(
+          fontFamily: "MyCustomFont",
+          fontWeight: FontWeight.w900,
         ),
       ),
-      backgroundColor: backgroundColor, // Replace with your background color
-      body: Center(
-        child: ElevatedButton(
-          child: const Text(
-            'IGRA',
-            style: TextStyle(
-              fontFamily: "MyCustomFont",
-              fontWeight: FontWeight.w900,
+    ),
+    backgroundColor: backgroundColor, // Replace with your background color
+    body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            child: const Text(
+              'IGRA',
+              style: TextStyle(
+                fontFamily: "MyCustomFont",
+                fontWeight: FontWeight.w900,
+              ),
             ),
-          ),
-          onPressed: () async {
-            GameResult? partialResult = await getPartialGameResult();
-            if(partialResult==null){
-              _showNewGameDialog(context);
-            }
-            else{
-              Navigator.push(
+            onPressed: () async {
+              GameResult? partialResult = await getPartialGameResult();
+              if (partialResult == null) {
+                _showNewGameDialog(context);
+              } else {
+                Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GamePage(gameName: partialResult.name, tableData: partialResult.tableData,),
+                    builder: (context) => GamePage(
+                      id: partialResult.id,
+                      gameName: partialResult.name,
+                      tableData: partialResult.tableData,
+                      cellConditions: partialResult.cellConditions,
+                      cellConditionsZeroValues: partialResult.cellConditionsZeroValues,
+                      sum1DownColor: partialResult.sum1DownColor,
+                      sum1UpColor: partialResult.sum1UpColor,
+                      sum1UpDownColor: partialResult.sum1UpDownColor,
+                      sum1PredColor: partialResult.sum1PredColor,
+                    ),
                   ),
                 );
-            }
-            
-          },
-        ),
+              }
+            },
+          ),
+          const SizedBox(height: 20), // Add some space between the buttons
+          ElevatedButton(
+            child: const Text(
+              'ZGODOVINA',
+              style: TextStyle(
+                fontFamily: "MyCustomFont",
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ResultsPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   void _showNewGameDialog(BuildContext context) {
     final TextEditingController nameController = TextEditingController(text: 'listek');
@@ -74,15 +106,16 @@ class StartPage extends StatelessWidget {
             ),
             TextButton(
               child: const Text('Igraj'),
-              onPressed: () {
+              onPressed: () async {
                 // Use the value from the TextEditingController
                 final String gameName = nameController.text;
-                
+                int id = await getNextGameResultId();
+                Navigator.of(context).pop();
                 // Navigate to the GamePage, passing the playerName if needed
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GamePage(gameName: gameName, tableData: const [],),
+                    builder: (context) => GamePage(id: id,gameName: gameName, tableData: const [], cellConditions: const [], cellConditionsZeroValues: const [], sum1DownColor: sumColor, sum1UpColor: sumColor, sum1UpDownColor: sumColor, sum1PredColor: sumColor,),
                   ),
                 );
 

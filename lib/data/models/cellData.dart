@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:jambapp/core/constants/colors.dart';
 
 class CellData {
+  final int index;
   final String name;
-  final Color color;
-  final Color colorOfText = textColor;
-  final bool isInputField;
-  final TextEditingController controller;
+  Color color;
+  Color colorOfText = textColor;
+  bool isInputField;
+  TextEditingController controller;
   final String imagePath;
   final List<int> allowedScore;
-  final int index;
   
   CellData({
     required this.index,

@@ -5,7 +5,7 @@ import 'package:jambapp/core/constants/colors.dart';
 import 'package:jambapp/core/constants/textControllers.dart';
 import 'package:jambapp/data/models/cellData.dart';
 
-class TableBuild extends ChangeNotifier {
+class TableBuildResult extends ChangeNotifier {
   //Main function for building the game table
   List<List<CellData>> buildTable(List<List<CellData>> tableData, List<bool> cellConditions, List<bool> cellConditionsZeroValues, Color sum1DownColor, Color sum1UpColor, Color sum1UpDownColor, Color sum1PredColor) {
     
@@ -32,7 +32,7 @@ class TableBuild extends ChangeNotifier {
     for(int i=0;i<6;i++){
       List<CellData> tableRow = [];
       for(int j=0;j<6;j++){
-        tableRow.add(CellData(index: indexCount, name: (j==5) ? "" : indexCount.toString(), color: (j==0 || j==5) ? backgroundColorOfImage : (cellConditions[indexCount] ? errorColor : cellBGColor), isInputField: (j==0 || j==5) ? false : true, allowedScore: (j==0 || j==5) ? emptyAllowedScore : listOfAllowedScores[i], controller: (j==0 || j==5) ? emptyTextController : listOfTextControllers[i][j], imagePath: (j==0) ? seqOfRowImages[i] : ""));
+        tableRow.add(CellData(index: indexCount, name: (j==5) ? "" : indexCount.toString(), color: (j==0 || j==5) ? backgroundColorOfImage : (cellConditions[indexCount] ? errorColor : cellBGColor), isInputField: false, allowedScore: (j==0 || j==5) ? emptyAllowedScore : listOfAllowedScores[i], controller: (j==0 || j==5) ? emptyTextController : tableData[i][j].controller, imagePath: (j==0) ? seqOfRowImages[i] : ""));
         indexCount++;
       }
       tableData.add(tableRow);
@@ -49,18 +49,18 @@ class TableBuild extends ChangeNotifier {
 
       tableData.add([
         CellData(index: 49,name: 'MAX',   color: backgroundColorOfImage, isInputField: false, allowedScore: emptyAllowedScore, controller: emptyTextController, imagePath: "assets/images/max.png"),
-        CellData(index: 50,name: 'max_dol', color: cellConditions[50] ? errorColor : cellBGColor, isInputField: true, allowedScore: scoreMax, controller: maxDownController, imagePath: ""),
-        CellData(index: 51,name: 'max_gor', color: cellConditions[51] ? errorColor : cellBGColor, isInputField: true, allowedScore: scoreMax, controller: maxUpController, imagePath: ""),
-        CellData(index: 52,name: 'max_gd', color: cellConditions[52] ? errorColor : cellBGColor, isInputField: true, allowedScore: scoreMax, controller: maxUpDownController, imagePath: ""),
-        CellData(index: 53,name: 'max_n', color: cellConditions[53] ? errorColor : cellBGColor, isInputField: true, allowedScore: scoreMax, controller: maxPredController, imagePath: ""),
+        CellData(index: 50,name: 'max_dol', color: cellConditions[50] ? errorColor : cellBGColor, isInputField: false, allowedScore: scoreMax, controller: maxDownController, imagePath: ""),
+        CellData(index: 51,name: 'max_gor', color: cellConditions[51] ? errorColor : cellBGColor, isInputField: false, allowedScore: scoreMax, controller: maxUpController, imagePath: ""),
+        CellData(index: 52,name: 'max_gd', color: cellConditions[52] ? errorColor : cellBGColor, isInputField: false, allowedScore: scoreMax, controller: maxUpDownController, imagePath: ""),
+        CellData(index: 53,name: 'max_n', color: cellConditions[53] ? errorColor : cellBGColor, isInputField: false, allowedScore: scoreMax, controller: maxPredController, imagePath: ""),
         CellData(index: 54,name: '', color: backgroundColorOfImage, isInputField: false, allowedScore: emptyAllowedScore, controller: emptyTextController, imagePath: ""),
       ]);
       tableData.add([
         CellData(index: 55,name: 'MIN',   color: backgroundColorOfImage, isInputField: false, allowedScore: emptyAllowedScore, controller: emptyTextController, imagePath: "assets/images/min.png"),
-        CellData(index: 56,name: 'min_dol', color: cellConditions[56] ? errorColor : cellBGColor, isInputField: true, allowedScore: scoreMin, controller: minDownController, imagePath: ""),
-        CellData(index: 57,name: 'min_gor', color: cellConditions[57] ? errorColor : cellBGColor, isInputField: true, allowedScore: scoreMin, controller: minUpController, imagePath: ""),
-        CellData(index: 58,name: 'min_gd', color: cellConditions[58] ? errorColor : cellBGColor, isInputField: true, allowedScore: scoreMin, controller: minUpDownController, imagePath: ""),
-        CellData(index: 59,name: 'min_n', color: cellConditions[59] ? errorColor : cellBGColor, isInputField: true, allowedScore: scoreMin, controller: minPredController, imagePath: ""),
+        CellData(index: 56,name: 'min_dol', color: cellConditions[56] ? errorColor : cellBGColor, isInputField: false, allowedScore: scoreMin, controller: minDownController, imagePath: ""),
+        CellData(index: 57,name: 'min_gor', color: cellConditions[57] ? errorColor : cellBGColor, isInputField: false, allowedScore: scoreMin, controller: minUpController, imagePath: ""),
+        CellData(index: 58,name: 'min_gd', color: cellConditions[58] ? errorColor : cellBGColor, isInputField: false, allowedScore: scoreMin, controller: minUpDownController, imagePath: ""),
+        CellData(index: 59,name: 'min_n', color: cellConditions[59] ? errorColor : cellBGColor, isInputField: false, allowedScore: scoreMin, controller: minPredController, imagePath: ""),
         CellData(index: 60,name: '', color: backgroundColorOfImage, isInputField: false, allowedScore: emptyAllowedScore, controller: emptyTextController, imagePath: ""),
       ]);
       tableData.add([
@@ -77,7 +77,7 @@ class TableBuild extends ChangeNotifier {
       for(int i=10;i<15;i++){
         List<CellData> tableRow = [];
         for(int j=0;j<6;j++){
-          tableRow.add(CellData(index: indexCount, name: (j==5) ? "" : indexCount.toString(), color: (j==0 || j==5) ? backgroundColorOfImage : (cellConditions[indexCount] ? errorColor : cellConditionsZeroValues[indexCount] ? zeroValueColor: cellBGColor), isInputField: (j==0 || j==5) ? false : true, allowedScore: (j==0 || j==5) ? emptyAllowedScore : listOfAllowedScores[i], controller: (j==0 || j==5) ? emptyTextController : listOfTextControllers[i][j], imagePath: (j==0) ? seqOfRowImages[i] : ""));
+          tableRow.add(CellData(index: indexCount, name: (j==5) ? "" : indexCount.toString(), color: (j==0 || j==5) ? backgroundColorOfImage : (cellConditions[indexCount] ? errorColor : cellConditionsZeroValues[indexCount] ? zeroValueColor: cellBGColor), isInputField: false, allowedScore: (j==0 || j==5) ? emptyAllowedScore : listOfAllowedScores[i], controller: (j==0 || j==5) ? emptyTextController : listOfTextControllers[i][j], imagePath: (j==0) ? seqOfRowImages[i] : ""));
           indexCount++;
         }
         tableData.add(tableRow);
@@ -103,35 +103,6 @@ class TableBuild extends ChangeNotifier {
 
       // Add more rows here...
     return tableData;
-  }
-
-  bool checkIfTableFinished(){
-
-    //get the last down value
-    String lastDownValue = listOfTextControllers[14][1].text;
-    
-    //get the lastUpValue
-    String lastUpValue = listOfTextControllers[0][2].text;
-
-    //get the updown / pred values
-    int countUpDownSolvedCells = 0;
-    int countPredSolvedCells = 0;
-    for(int i=0;i<listOfTextControllers.length-1;i++){
-      if(listOfTextControllers[i][3].text!=""){
-        countUpDownSolvedCells++;
-      }
-      if(listOfTextControllers[i][4].text!=""){
-        countPredSolvedCells++;
-      }
-    }
-
-    //Check if lastdown value is set, last up value is set, upDown column is full, pred column is full
-    if(lastDownValue!="" && lastUpValue!="" && countUpDownSolvedCells==16 && countPredSolvedCells==16){
-      return true;
-    }else{
-      return false;
-    }
-
   }
 
 }
