@@ -1,18 +1,42 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:jambapp/core/constants/assets.dart';
 import 'package:jambapp/core/constants/cellConditions.dart';
 import 'package:jambapp/core/constants/colors.dart';
 import 'package:jambapp/core/constants/textControllers.dart';
 import 'package:jambapp/data/models/cellData.dart';
-import 'package:jambapp/data/models/gameResult.dart';
+
+import 'package:jambapp/data/repository/gameStorage.dart';
+import 'package:jambapp/data/testing/fillTable.dart';
 import 'package:jambapp/ui/viewmodels/tableBuild.dart';
+import 'package:screenshot/screenshot.dart';
 
 class GamePage extends StatefulWidget {
+
+  int id;
   final String gameName;
   List<List<CellData>> tableData;
+  List<bool> cellConditions;
+  List<bool> cellConditionsZeroValues;
+  Color sum1DownColor;
+  Color sum1UpColor;
+  Color sum1UpDownColor;
+  Color sum1PredColor;
 
-  GamePage({super.key, required this.gameName, required this.tableData});
+  GamePage({
+    super.key, 
+    required this.id, 
+    required this.gameName, 
+    required this.tableData, 
+    required this.cellConditions, 
+    required this.cellConditionsZeroValues, 
+    required this.sum1DownColor, 
+    required this.sum1UpColor, 
+    required this.sum1UpDownColor, 
+    required this.sum1PredColor
+  });
 
   @override
   GamePageState createState() => GamePageState();
@@ -28,30 +52,38 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
     WidgetsBinding.instance.addObserver(this);
   }
 
-  int countFinishedColumns = 0;
-  Color sum1DownColor = sumColor;
-  Color sum1UpColor = sumColor;
-  Color sum1UpDownColor = sumColor;
-  Color sum1PredColor = sumColor;
-
   TableBuild tableBuild = TableBuild();
   
-
   @override
   void dispose() {
     super.dispose();
-    
   }
+
+  bool tableFinished = false;
   
   @override
   Widget build(BuildContext context) {
     if(widget.tableData.isEmpty){
-      widget.tableData = tableBuild.buildTable(widget.tableData, cellConditions, cellConditionsZeroValues, sum1DownColor, sum1UpColor, sum1UpDownColor, sum1PredColor);    
-
+      widget.sum1DownColor = sumColor;
+      widget.sum1UpColor = sumColor;
+      widget.sum1UpDownColor = sumColor;
+      widget.sum1PredColor = sumColor;
+      widget.cellConditions = List.filled(120, false);
+      widget.cellConditionsZeroValues = List.filled(120, false);
+      widget.tableData = tableBuild.buildTable(widget.tableData, widget.cellConditions, widget.cellConditionsZeroValues, widget.sum1DownColor, widget.sum1UpColor, widget.sum1UpDownColor, widget.sum1PredColor);    
     }
-    
+     // Show dialog if the table is finished
+  if (tableFinished) {
+    Future.delayed(Duration.zero, () => _showTableFinishedDialog(context));
+  }
+  
     return WillPopScope(
   onWillPop: () async {
+
+    if(tableFinished){
+      return true;
+    }
+
     bool confirm = await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -80,6 +112,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
                 fontWeight: FontWeight.w900,
               ),),
               onPressed: () {
+                removePartialGame();
                 Navigator.of(context).pop(true); // Return false to indicate cancellation
               },
             ),
@@ -89,6 +122,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
           fontWeight: FontWeight.w900,
         ),),
               onPressed: () {
+                savePartialGameResult(widget.id, widget.gameName, int.tryParse(totalScore.text) ?? 0, widget.tableData, widget.cellConditions, widget.cellConditionsZeroValues, widget.sum1DownColor, widget.sum1UpColor, widget.sum1UpDownColor, widget.sum1PredColor);
                 Navigator.of(context).pop(true); // Return true to indicate confirmation
               },
             ),
@@ -99,7 +133,8 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
 
     return confirm; // If confirm is null, default to false
   },
-  child: Scaffold(
+  
+    child: Scaffold(
       appBar: AppBar(
         title: Text(
           widget.gameName,
@@ -109,13 +144,13 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
           ),
           textAlign: TextAlign.center,
         ),
-        actions: [
+        actions: const [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.task_alt, 
               color: Color.fromARGB(255, 29, 29, 29), 
             ),
-            onPressed: saveGame, 
+            onPressed: fillTable, 
           ),
         ],
       ),
@@ -152,7 +187,48 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
     ),
 );
 
+  
+
   }
+
+  void _showTableFinishedDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          'Čestitke! Končali ste igro!',
+          style: TextStyle(
+            fontFamily: customFont,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        content: Text(
+          'Rezultat: ' + totalScore.text + "\n \n Igra se je shranila pod zgodovino rezultatov.",
+          style: TextStyle(
+            fontFamily: customFont,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        
+        actions: [
+          TextButton(
+            child: Text(
+              'Nadaljuj',
+              style: TextStyle(
+                fontFamily: customFont,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
   Widget _buildCellWidget(CellData cellData) {
     return Center(
@@ -171,7 +247,11 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
 
   Widget _buildInputField(int index, String name, Color customTextColor, TextEditingController controller, Color cellBGColor, final allowedScores) {
     
-    _updateSumCell(index, cellBGColor, allowedScores, controller);
+      //Update the sums in the build method with random text values in each calculation part.
+      if((index==8) ||(index==51) || (index==70)){
+        _updateSumCell(index, cellBGColor, allowedScores, controller);
+      }
+
 
       final downList = <TextEditingController>[val1DownController, val2DownController, val3DownController, val4DownController, val5DownController, val6DownController, maxDownController, minDownController, pairsDownController, straightDownController, fullDownController, pokerDownController, yahtzeeDownController];
       final upList = <TextEditingController>[val1UpController, val2UpController, val3UpController, val4UpController, val5UpController, val6UpController, maxUpController, minUpController, pairsUpController, straightUpController, fullUpController, pokerUpController, yahtzeeUpController];
@@ -286,26 +366,34 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
     _updateTotalSum();
     
    
-    //Check if controllers value is zero (gray background)
+    //Check if controller text has the allowed score
     setState(() {
       int controllerValue = int.tryParse(controller.text) ?? -1;
-      
       if(pravilo.length > 0 && controllerValue >= 0){
         if(pravilo.contains(controllerValue)){
-          cellConditions[index] = false;
+          widget.cellConditions[index] = false;
+          widget.tableData[index~/numOfColumns][index-(numOfColumns*(index~/numOfColumns))-1].color = cellBGColor;
+          tableFinished = tableBuild.checkIfTableFinished();
+          if(tableFinished){
+            saveNewGameResult(widget.id, widget.gameName, tableFinished,   int.tryParse(totalScore.text) ?? 0, widget.tableData, widget.cellConditions, widget.cellConditionsZeroValues, widget.sum1DownColor, widget.sum1UpColor, widget.sum1UpDownColor, widget.sum1PredColor);
+          }
         }else{
-          cellConditions[index] = true;
+          widget.cellConditions[index] = true;
+          widget.tableData[index~/numOfColumns][index-(numOfColumns*(index~/numOfColumns))-1].color = errorColor;
         }
 
         if(controllerValue==0 && pravilo.contains(controllerValue) && controller.text!=""){
-          cellConditionsZeroValues[index] = true;
-        }else{
-          cellConditionsZeroValues[index] = false;
+        widget.tableData[index~/numOfColumns][index-(numOfColumns*(index~/numOfColumns))-1].color  = zeroValueColor;
+        tableFinished = tableBuild.checkIfTableFinished();
+        if(tableFinished){
+          saveNewGameResult(widget.id, widget.gameName, tableFinished, int.tryParse(totalScore.text) ?? 0, widget.tableData, widget.cellConditions, widget.cellConditionsZeroValues, widget.sum1DownColor, widget.sum1UpColor, widget.sum1UpDownColor, widget.sum1PredColor);
         }
-      }else{
-        cellConditions[index] = false;
-        cellConditionsZeroValues[index] = false;
       }
+      }
+      else{
+        widget.tableData[index~/numOfColumns][index-(numOfColumns*(index~/numOfColumns))-1].color = cellBGColor;
+      }
+    
     }
     );
   }
@@ -319,15 +407,14 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
     final int down5 = int.tryParse(val5DownController.text) ?? 0;
     final int down6 = int.tryParse(val6DownController.text) ?? 0;
     int sumDown = down1 + down2 + down3 + down4 + down5 + down6;
-
     if(sumDown>=60){
       sumDown += 30;
       setState(() {
-        sum1DownColor = sumCorrectColor;
+        widget.sum1DownColor = sumCorrectColor;
       });
     }else{
       setState(() {
-        sum1DownColor = sumColor;
+        widget.sum1DownColor = sumColor;
       });
     }
 
@@ -339,15 +426,15 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
     final int up5 = int.tryParse(val5UpController.text) ?? 0;
     final int up6 = int.tryParse(val6UpController.text) ?? 0;
     int sumUp = up1 + up2 + up3 + up4 + up5 + up6;
-
+  
     if(sumUp>=60){
       sumUp += 30;
       setState(() {
-        sum1UpColor = sumCorrectColor;
+        widget.sum1UpColor = sumCorrectColor;
       });
     }else{
       setState(() {
-        sum1UpColor = sumColor;
+        widget.sum1UpColor = sumColor;
       });
     }
 
@@ -364,16 +451,14 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
     if(sumUpDown>=60){
       sumUpDown += 30;
       setState(() {
-        sum1UpDownColor = sumCorrectColor;
+        widget.sum1UpDownColor = sumCorrectColor;
       });
     }else{
       setState(() {
-        sum1UpDownColor = sumColor;
+        widget.sum1UpDownColor = sumColor;
       });
     }
 
-
-    //Izračunavanje za napoved nad 60
     final int pred1 = int.tryParse(val1PredController.text) ?? 0;
     final int pred2 = int.tryParse(val2PredController.text) ?? 0;
     final int pred3 = int.tryParse(val3PredController.text) ?? 0;
@@ -385,17 +470,18 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
     if(sumPred>=60){
       sumPred += 30;
       setState(() {
-        sum1PredColor = sumCorrectColor;
+        widget.sum1PredColor = sumCorrectColor;
       });
     }else{
       setState(() {
-        sum1PredColor = sumColor;
+        widget.sum1PredColor = sumColor;
       });
     }
 
     int sumOver60 = sumDown + sumUp + sumUpDown + sumPred;
 
     setState(() {
+      print("sumDown: " + sumDown.toString());
       sum1downController.text = sumDown.toString();
       sum1upController.text = sumUp.toString();
       sum1upDownController.text = sumUpDown.toString();
@@ -512,17 +598,14 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver{
     });
   }
 
-  void saveGame(){
-
-  }
 
 
   //If the app goes to background, save the game
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
-
-      //_saveData();
+     savePartialGameResult(widget.id, widget.gameName, int.tryParse(totalScore.text) ?? 0, widget.tableData, widget.cellConditions, widget.cellConditionsZeroValues, widget.sum1DownColor, widget.sum1UpColor, widget.sum1UpDownColor, widget.sum1PredColor);
+                
     }
   }
 
