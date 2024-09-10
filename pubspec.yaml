@@ -15,12 +15,20 @@ dependencies:
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.3.2
   intl: ^0.18.1
+  flutter_native_splash: ^2.4.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_launcher_icons: "^0.13.1"
 
+flutter_native_splash:
+  color: "#ffc876" # Replace with your background color
+  image: assets/images/splash_screen.png
+  android: true
+  ios: true
+  android_gravity: center # Centers the image for Android
+  ios_content_mode: center # Centers the image for iOS
 
 
 flutter_launcher_icons:
@@ -55,6 +63,7 @@ flutter:
     - assets/images/yahtzee.png
     - assets/images/app_logo.png
     - assets/images/BG.png
+    - assets/images/splash_screen.png
   fonts:
     - family: MyCustomFont
       fonts:

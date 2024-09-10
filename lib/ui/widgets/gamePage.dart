@@ -52,136 +52,153 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
     // Show dialog if the table is finished
 
     return WillPopScope(
-      onWillPop: () async {
-        if (tableFinished) {
-          return true;
-        }
+        onWillPop: () async {
+          if (tableFinished) {
+            return true;
+          }
 
-        bool confirm = await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text(
-                'Potrditev',
-                style: TextStyle(
-                  fontFamily: "MyCustomFont",
-                  fontWeight: FontWeight.w900,
+          bool confirm = await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: sumColor,
+                title: const Text(
+                  'Potrditev',
+                  style: TextStyle(
+                    fontFamily: "MyCustomFont",
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                content: const Text(
+                  'Ali zelite shraniti igro?',
+                  style: TextStyle(
+                    fontFamily: "MyCustomFont",
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    child: const Text(
+                      'Preklici',
+                      style: TextStyle(
+                        fontFamily: "MyCustomFont",
+                        fontWeight: FontWeight.w900,
+                        color: textColor,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pop(false); // Return false to indicate cancellation
+                    },
+                  ),
+                  TextButton(
+                    child: const Text(
+                      'Zavrzi',
+                      style: TextStyle(
+                        fontFamily: "MyCustomFont",
+                        fontWeight: FontWeight.w900,
+                        color: textColor,
+                      ),
+                    ),
+                    onPressed: () {
+                      removePartialGame();
+                      Navigator.of(context)
+                          .pop(true); // Return false to indicate cancellation
+                    },
+                  ),
+                  TextButton(
+                    child: const Text(
+                      'Shrani',
+                      style: TextStyle(
+                        fontFamily: "MyCustomFont",
+                        fontWeight: FontWeight.w900,
+                        color: textColor,
+                      ),
+                    ),
+                    onPressed: () {
+                      savePartialGameResult(
+                          widget.id, widget.gameName, 0, widget.tableData);
+                      Navigator.of(context)
+                          .pop(true); // Return true to indicate confirmation
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+
+          return confirm; // If confirm is null, default to false
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              widget.gameName,
+              style: TextStyle(
+                fontFamily: customFont,
+                fontWeight: FontWeight.w900,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: primaryColor,
+          ),
+          body: SafeArea(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: bgImage, // Replace with your image path
+                  fit: BoxFit.cover,
                 ),
               ),
-              content: const Text(
-                'Ali zelite shraniti igro?',
-                style: TextStyle(
-                  fontFamily: "MyCustomFont",
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: const Text(
-                    'Preklici',
-                    style: TextStyle(
-                      fontFamily: "MyCustomFont",
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pop(false); // Return false to indicate cancellation
-                  },
-                ),
-                TextButton(
-                  child: const Text(
-                    'Zavrzi',
-                    style: TextStyle(
-                      fontFamily: "MyCustomFont",
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  onPressed: () {
-                    removePartialGame();
-                    Navigator.of(context)
-                        .pop(true); // Return false to indicate cancellation
-                  },
-                ),
-                TextButton(
-                  child: const Text(
-                    'Shrani',
-                    style: TextStyle(
-                      fontFamily: "MyCustomFont",
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  onPressed: () {
-                    savePartialGameResult(
-                        widget.id, widget.gameName, 0, widget.tableData);
-                    Navigator.of(context)
-                        .pop(true); // Return true to indicate confirmation
-                  },
-                ),
-              ],
-            );
-          },
-        );
-
-        return confirm; // If confirm is null, default to false
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            widget.gameName,
-            style: TextStyle(
-              fontFamily: customFont,
-              fontWeight: FontWeight.w900,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        backgroundColor: appBarBG,
-        body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: bgImage, // Replace with your image path
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Table(
-                defaultColumnWidth: const FixedColumnWidth(38.0),
-                children: widget.tableData.map((row) {
-                  return TableRow(
-                    children: row.map((cell) {
-                      return TableCell(
-                        verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(1.1),
-                          child: (cell is CellData)
-                              ? _buildCellWidget(cell)
-                              : (cell is ImageCellData)
-                                  ? _buildImageWidget(cell)
-                                  : (cell is SumCellData)
-                                      ? _buildSumCellWidget(cell)
-                                      : (cell is SumMaxMinCellData)
-                                          ? _buildMaxMinSumCellWidget(cell)
-                                          : (cell is TotalRowSumCellData)
-                                              ? _buildTotalRowSumCellWidget(
-                                                  cell)
-                                              : (cell is TotalSumCellData)
-                                                  ? _buildTotalSumCellWidget(
-                                                      cell)
-                                                  : _buildEmptyCell(),
+                          padding: const EdgeInsets.all(15.0),
+                          child: Table(
+                            defaultColumnWidth: const FixedColumnWidth(38.0),
+                            children: widget.tableData.map((row) {
+                              return TableRow(
+                                children: row.map((cell) {
+                                  return TableCell(
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(1.1),
+                                      child: (cell is CellData)
+                                          ? _buildCellWidget(cell)
+                                          : (cell is ImageCellData)
+                                              ? _buildImageWidget(cell)
+                                              : (cell is SumCellData)
+                                                  ? _buildSumCellWidget(cell)
+                                                  : (cell is SumMaxMinCellData)
+                                                      ? _buildMaxMinSumCellWidget(
+                                                          cell)
+                                                      : (cell
+                                                              is TotalRowSumCellData)
+                                                          ? _buildTotalRowSumCellWidget(
+                                                              cell)
+                                                          : (cell
+                                                                  is TotalSumCellData)
+                                                              ? _buildTotalSumCellWidget(
+                                                                  cell)
+                                                              : _buildEmptyCell(),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }).toList(),
+                          ),
                         ),
-                      );
-                    }).toList(),
-                  );
-                }).toList(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   void _showTableFinishedDialog(BuildContext context) {
@@ -189,6 +206,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: sumColor,
           title: Text(
             'Cestitke! Koncali ste igro!',
             style: TextStyle(
@@ -210,6 +228,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 style: TextStyle(
                   fontFamily: customFont,
                   fontWeight: FontWeight.w900,
+                  color: textColor,
                 ),
               ),
               onPressed: () {

@@ -19,10 +19,17 @@ class ResultsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Zgodovina rezultatov'),
+        title: const Text(
+          'Zgodovina rezultatov',
+          style: TextStyle(
+            fontFamily: "MyCustomFont",
+            fontWeight: FontWeight.w900,
+            color: textColor,
+          ),
+        ),
         backgroundColor: primaryColor, // Custom AppBar color
       ),
-      backgroundColor: Colors.grey[200], // Custom background color
+      backgroundColor: sumColor, // Custom background color
       body: FutureBuilder<List<GameResult>>(
         future: getAllGameResult(),
         builder: (context, snapshot) {
@@ -45,10 +52,22 @@ class ResultsPage extends StatelessWidget {
                 return Column(
                   children: [
                     ListTile(
-                      title: Text(result.name),
+                      title: Text(
+                        result.name,
+                        style: const TextStyle(
+                          fontFamily: "MyCustomFont",
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
+                      ),
                       subtitle: Text(formattedDate),
-                      trailing: Text("Rezultat: ${result.result}",
-                          style: const TextStyle(fontSize: 16.0)),
+                      trailing: Text(
+                        "Rezultat: ${result.result}",
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            color: textColor // Apply gradient color
+                            ),
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -84,45 +103,61 @@ class TableResultPage extends StatelessWidget {
         backgroundColor: primaryColor, // Same custom AppBar color
       ),
       backgroundColor: Colors.grey[200], // Same custom background color
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: bgImage, // Replace with your image path
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Table(
-              defaultColumnWidth: const FixedColumnWidth(38.0),
-              children: result.tableData.map((row) {
-                return TableRow(
-                  children: row.map((cell) {
-                    return TableCell(
-                      verticalAlignment: TableCellVerticalAlignment.middle,
-                      child: Padding(
-                        padding: const EdgeInsets.all(1.1),
-                        child: (cell is CellData)
-                            ? _buildCellWidget(cell)
-                            : (cell is ImageCellData)
-                                ? _buildImageWidget(cell)
-                                : (cell is SumCellData)
-                                    ? _buildSumCellWidget(cell)
-                                    : (cell is SumMaxMinCellData)
-                                        ? _buildMaxMinSumCellWidget(cell)
-                                        : (cell is TotalRowSumCellData)
-                                            ? _buildTotalRowSumCellWidget(cell)
-                                            : (cell is TotalSumCellData)
-                                                ? _buildTotalSumCellWidget(
-                                                    cell, result.result)
-                                                : _buildEmptyCell(),
-                      ),
-                    );
-                  }).toList(),
-                );
-              }).toList(),
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: bgImage, // Replace with your image path
+              fit: BoxFit.cover,
             ),
+          ),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Table(
+                        defaultColumnWidth: const FixedColumnWidth(38.0),
+                        children: result.tableData.map((row) {
+                          return TableRow(
+                            children: row.map((cell) {
+                              return TableCell(
+                                verticalAlignment:
+                                    TableCellVerticalAlignment.middle,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(1.1),
+                                  child: (cell is CellData)
+                                      ? _buildCellWidget(cell)
+                                      : (cell is ImageCellData)
+                                          ? _buildImageWidget(cell)
+                                          : (cell is SumCellData)
+                                              ? _buildSumCellWidget(cell)
+                                              : (cell is SumMaxMinCellData)
+                                                  ? _buildMaxMinSumCellWidget(
+                                                      cell)
+                                                  : (cell
+                                                          is TotalRowSumCellData)
+                                                      ? _buildTotalRowSumCellWidget(
+                                                          cell)
+                                                      : (cell
+                                                              is TotalSumCellData)
+                                                          ? _buildTotalSumCellWidget(
+                                                              cell,
+                                                              result.result)
+                                                          : _buildEmptyCell(),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
