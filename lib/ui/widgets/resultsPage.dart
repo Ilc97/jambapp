@@ -103,45 +103,61 @@ class TableResultPage extends StatelessWidget {
         backgroundColor: primaryColor, // Same custom AppBar color
       ),
       backgroundColor: Colors.grey[200], // Same custom background color
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: bgImage, // Replace with your image path
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Table(
-              defaultColumnWidth: const FixedColumnWidth(38.0),
-              children: result.tableData.map((row) {
-                return TableRow(
-                  children: row.map((cell) {
-                    return TableCell(
-                      verticalAlignment: TableCellVerticalAlignment.middle,
-                      child: Padding(
-                        padding: const EdgeInsets.all(1.1),
-                        child: (cell is CellData)
-                            ? _buildCellWidget(cell)
-                            : (cell is ImageCellData)
-                                ? _buildImageWidget(cell)
-                                : (cell is SumCellData)
-                                    ? _buildSumCellWidget(cell)
-                                    : (cell is SumMaxMinCellData)
-                                        ? _buildMaxMinSumCellWidget(cell)
-                                        : (cell is TotalRowSumCellData)
-                                            ? _buildTotalRowSumCellWidget(cell)
-                                            : (cell is TotalSumCellData)
-                                                ? _buildTotalSumCellWidget(
-                                                    cell, result.result)
-                                                : _buildEmptyCell(),
-                      ),
-                    );
-                  }).toList(),
-                );
-              }).toList(),
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: bgImage, // Replace with your image path
+              fit: BoxFit.cover,
             ),
+          ),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Table(
+                        defaultColumnWidth: const FixedColumnWidth(38.0),
+                        children: result.tableData.map((row) {
+                          return TableRow(
+                            children: row.map((cell) {
+                              return TableCell(
+                                verticalAlignment:
+                                    TableCellVerticalAlignment.middle,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(1.1),
+                                  child: (cell is CellData)
+                                      ? _buildCellWidget(cell)
+                                      : (cell is ImageCellData)
+                                          ? _buildImageWidget(cell)
+                                          : (cell is SumCellData)
+                                              ? _buildSumCellWidget(cell)
+                                              : (cell is SumMaxMinCellData)
+                                                  ? _buildMaxMinSumCellWidget(
+                                                      cell)
+                                                  : (cell
+                                                          is TotalRowSumCellData)
+                                                      ? _buildTotalRowSumCellWidget(
+                                                          cell)
+                                                      : (cell
+                                                              is TotalSumCellData)
+                                                          ? _buildTotalSumCellWidget(
+                                                              cell,
+                                                              result.result)
+                                                          : _buildEmptyCell(),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

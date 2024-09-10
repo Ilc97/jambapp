@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jambapp/core/constants/colors.dart'; // Assuming this contains your color constants
 import 'package:jambapp/data/models/gameResult.dart';
 import 'package:jambapp/data/repository/gameStorage.dart';
+import 'package:jambapp/ui/widgets/aboutPage.dart';
 import 'package:jambapp/ui/widgets/gamePage.dart';
 import 'package:jambapp/ui/widgets/resultsPage.dart';
 
@@ -127,7 +128,7 @@ class StartPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ResultsPage(),
+                    builder: (context) => const AboutPage(),
                   ),
                 );
               },
