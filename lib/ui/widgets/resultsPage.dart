@@ -19,10 +19,17 @@ class ResultsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Zgodovina rezultatov'),
+        title: const Text(
+          'Zgodovina rezultatov',
+          style: TextStyle(
+            fontFamily: "MyCustomFont",
+            fontWeight: FontWeight.w900,
+            color: textColor,
+          ),
+        ),
         backgroundColor: primaryColor, // Custom AppBar color
       ),
-      backgroundColor: Colors.grey[200], // Custom background color
+      backgroundColor: sumColor, // Custom background color
       body: FutureBuilder<List<GameResult>>(
         future: getAllGameResult(),
         builder: (context, snapshot) {
@@ -45,10 +52,22 @@ class ResultsPage extends StatelessWidget {
                 return Column(
                   children: [
                     ListTile(
-                      title: Text(result.name),
+                      title: Text(
+                        result.name,
+                        style: const TextStyle(
+                          fontFamily: "MyCustomFont",
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
+                      ),
                       subtitle: Text(formattedDate),
-                      trailing: Text("Rezultat: ${result.result}",
-                          style: const TextStyle(fontSize: 16.0)),
+                      trailing: Text(
+                        "Rezultat: ${result.result}",
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            color: textColor // Apply gradient color
+                            ),
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,

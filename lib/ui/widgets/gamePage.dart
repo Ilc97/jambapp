@@ -61,6 +61,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
+              backgroundColor: sumColor,
               title: const Text(
                 'Potrditev',
                 style: TextStyle(
@@ -82,6 +83,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                     style: TextStyle(
                       fontFamily: "MyCustomFont",
                       fontWeight: FontWeight.w900,
+                      color: textColor,
                     ),
                   ),
                   onPressed: () {
@@ -95,6 +97,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                     style: TextStyle(
                       fontFamily: "MyCustomFont",
                       fontWeight: FontWeight.w900,
+                      color: textColor,
                     ),
                   ),
                   onPressed: () {
@@ -109,6 +112,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                     style: TextStyle(
                       fontFamily: "MyCustomFont",
                       fontWeight: FontWeight.w900,
+                      color: textColor,
                     ),
                   ),
                   onPressed: () {
@@ -135,8 +139,8 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
             ),
             textAlign: TextAlign.center,
           ),
+          backgroundColor: primaryColor,
         ),
-        backgroundColor: appBarBG,
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -189,6 +193,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: sumColor,
           title: Text(
             'Cestitke! Koncali ste igro!',
             style: TextStyle(
@@ -210,6 +215,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 style: TextStyle(
                   fontFamily: customFont,
                   fontWeight: FontWeight.w900,
+                  color: textColor,
                 ),
               ),
               onPressed: () {
