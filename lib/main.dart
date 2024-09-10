@@ -9,8 +9,6 @@ void main() {
 class MyGameApp extends StatelessWidget {
   const MyGameApp({super.key});
 
-
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,4 +20,3 @@ class MyGameApp extends StatelessWidget {
     );
   }
 }
-
