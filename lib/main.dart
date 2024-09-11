@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jambapp/core/constants/colors.dart';
 import 'package:jambapp/ui/widgets/startPage.dart';
 
 void main() {
-  runApp(const MyGameApp());
+  // Set the preferred orientation to portrait up only
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(const MyGameApp());
+  });
 }
 
 class MyGameApp extends StatelessWidget {

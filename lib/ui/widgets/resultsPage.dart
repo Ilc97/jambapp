@@ -92,11 +92,50 @@ class ResultsPage extends StatelessWidget {
 
 class TableResultPage extends StatelessWidget {
   final GameResult result;
-
+  static var cellHeight = 34.0;
+  static var cellWidth = 37.0;
+  static var topPadding = 15.0;
   const TableResultPage({Key? key, required this.result}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+
+    if (height < 700) {
+      cellHeight = 32.0;
+      cellWidth = 34.5;
+    } else if (height < 750) {
+      cellHeight = 33.5;
+      cellWidth = 36.5;
+    } else if (height < 800) {
+      cellHeight = 34.5;
+      cellWidth = 38.5;
+    } else if (height < 825) {
+      cellHeight = 35.0;
+      cellWidth = 39.5;
+    } else if (height < 850) {
+      topPadding = 15.0;
+      cellHeight = 36.5;
+      cellWidth = 40.0;
+    } else if (height < 900) {
+      topPadding = 20.0;
+      cellHeight = 37.0;
+      cellWidth = 41.0;
+    } else if (height < 950) {
+      topPadding = 30.0;
+      cellHeight = 38.0;
+      cellWidth = 42.0;
+    } else if (height < 1100) {
+      topPadding = 45.0;
+      cellHeight = 40.0;
+      cellWidth = 44.0;
+    } else if (height > 1099) {
+      topPadding = 55.0;
+      cellHeight = 52.0;
+      cellWidth = 57.0;
+      customFontSize = 21.0;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(result.name),
@@ -117,9 +156,9 @@ class TableResultPage extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(15.0),
+                      padding: EdgeInsets.only(top: topPadding),
                       child: Table(
-                        defaultColumnWidth: const FixedColumnWidth(38.0),
+                        defaultColumnWidth: FixedColumnWidth(cellWidth),
                         children: result.tableData.map((row) {
                           return TableRow(
                             children: row.map((cell) {
@@ -127,7 +166,7 @@ class TableResultPage extends StatelessWidget {
                                 verticalAlignment:
                                     TableCellVerticalAlignment.middle,
                                 child: Padding(
-                                  padding: const EdgeInsets.all(1.1),
+                                  padding: const EdgeInsets.all(1.0),
                                   child: (cell is CellData)
                                       ? _buildCellWidget(cell)
                                       : (cell is ImageCellData)
@@ -172,8 +211,8 @@ class TableResultPage extends StatelessWidget {
         return Center(
             child: Container(
           alignment: Alignment.center,
-          width: 38.0,
-          height: 33.0,
+          width: cellWidth,
+          height: cellHeight,
           decoration: BoxDecoration(
             color: cellData.color,
             borderRadius: BorderRadius.circular(6.0),
@@ -279,8 +318,8 @@ class TableResultPage extends StatelessWidget {
           return Center(
               child: Container(
             alignment: Alignment.center,
-            width: 38.0,
-            height: 33.0,
+            width: cellWidth,
+            height: cellHeight,
             decoration: BoxDecoration(
               color: cellData.color,
               borderRadius:
@@ -298,8 +337,8 @@ class TableResultPage extends StatelessWidget {
           return Center(
               child: Container(
             alignment: Alignment.center,
-            width: 38.0,
-            height: 33.0,
+            width: cellWidth,
+            height: cellHeight,
             decoration: BoxDecoration(
               color: sumColor,
               borderRadius:
@@ -317,8 +356,8 @@ class TableResultPage extends StatelessWidget {
           return Center(
               child: Container(
             alignment: Alignment.center,
-            width: 38.0,
-            height: 33.0,
+            width: cellWidth,
+            height: cellHeight,
             decoration: BoxDecoration(
               color: cellData.color,
               borderRadius:
@@ -336,8 +375,8 @@ class TableResultPage extends StatelessWidget {
           return Center(
               child: Container(
             alignment: Alignment.center,
-            width: 38.0,
-            height: 33.0,
+            width: cellWidth,
+            height: cellHeight,
             decoration: BoxDecoration(
               color: cellData.color,
               borderRadius:
@@ -352,8 +391,8 @@ class TableResultPage extends StatelessWidget {
     return Center(
         child: Container(
       alignment: Alignment.center,
-      width: 38.0,
-      height: 33.0,
+      width: cellWidth,
+      height: cellHeight,
       decoration: BoxDecoration(
         color: backgroundColorOfImage,
         borderRadius:

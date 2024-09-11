@@ -37,6 +37,10 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
   TableBuild tableBuild = TableBuild();
 
+  double cellHeight = 34.0;
+  double cellWidth = 37.0;
+  double topPadding = 15.0;
+
   @override
   void dispose() {
     super.dispose();
@@ -46,6 +50,44 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    //Setting the size of table
+    var height = MediaQuery.of(context).size.height;
+
+    if (height < 700) {
+      cellHeight = 32.0;
+      cellWidth = 34.5;
+    } else if (height < 750) {
+      cellHeight = 33.5;
+      cellWidth = 36.5;
+    } else if (height < 800) {
+      cellHeight = 34.5;
+      cellWidth = 38.5;
+    } else if (height < 825) {
+      cellHeight = 35.0;
+      cellWidth = 39.5;
+    } else if (height < 850) {
+      topPadding = 15.0;
+      cellHeight = 36.5;
+      cellWidth = 40.0;
+    } else if (height < 900) {
+      topPadding = 20.0;
+      cellHeight = 37.0;
+      cellWidth = 41.0;
+    } else if (height < 950) {
+      topPadding = 30.0;
+      cellHeight = 38.0;
+      cellWidth = 42.0;
+    } else if (height < 1100) {
+      topPadding = 45.0;
+      cellHeight = 40.0;
+      cellWidth = 44.0;
+    } else if (height > 1099) {
+      topPadding = 55.0;
+      cellHeight = 52.0;
+      cellWidth = 57.0;
+      customFontSize = 21.0;
+    }
+
     if (widget.tableData.isEmpty) {
       widget.tableData = tableBuild.buildTable(widget.tableData);
     }
@@ -130,6 +172,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
           return confirm; // If confirm is null, default to false
         },
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
             title: Text(
               widget.gameName,
@@ -142,60 +185,65 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
             backgroundColor: primaryColor,
           ),
           body: SafeArea(
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: bgImage, // Replace with your image path
-                  fit: BoxFit.cover,
+            child: Stack(
+              children: [
+                // Background image
+                Positioned.fill(
+                  child: Image(
+                    image: bgImage, // Replace with your image path
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Table(
-                            defaultColumnWidth: const FixedColumnWidth(38.0),
-                            children: widget.tableData.map((row) {
-                              return TableRow(
-                                children: row.map((cell) {
-                                  return TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(1.1),
-                                      child: (cell is CellData)
-                                          ? _buildCellWidget(cell)
-                                          : (cell is ImageCellData)
-                                              ? _buildImageWidget(cell)
-                                              : (cell is SumCellData)
-                                                  ? _buildSumCellWidget(cell)
-                                                  : (cell is SumMaxMinCellData)
-                                                      ? _buildMaxMinSumCellWidget(
-                                                          cell)
-                                                      : (cell
-                                                              is TotalRowSumCellData)
-                                                          ? _buildTotalRowSumCellWidget(
-                                                              cell)
-                                                          : (cell
-                                                                  is TotalSumCellData)
-                                                              ? _buildTotalSumCellWidget(
-                                                                  cell)
-                                                              : _buildEmptyCell(),
-                                    ),
-                                  );
-                                }).toList(),
-                              );
-                            }).toList(),
+                // Foreground content
+                Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: topPadding),
+                            child: Table(
+                              defaultColumnWidth: FixedColumnWidth(cellWidth),
+                              children: widget.tableData.map((row) {
+                                return TableRow(
+                                  children: row.map((cell) {
+                                    return TableCell(
+                                      verticalAlignment:
+                                          TableCellVerticalAlignment.middle,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(1.0),
+                                        child: (cell is CellData)
+                                            ? _buildCellWidget(cell)
+                                            : (cell is ImageCellData)
+                                                ? _buildImageWidget(cell)
+                                                : (cell is SumCellData)
+                                                    ? _buildSumCellWidget(cell)
+                                                    : (cell
+                                                            is SumMaxMinCellData)
+                                                        ? _buildMaxMinSumCellWidget(
+                                                            cell)
+                                                        : (cell
+                                                                is TotalRowSumCellData)
+                                                            ? _buildTotalRowSumCellWidget(
+                                                                cell)
+                                                            : (cell
+                                                                    is TotalSumCellData)
+                                                                ? _buildTotalSumCellWidget(
+                                                                    cell)
+                                                                : _buildEmptyCell(),
+                                      ),
+                                    );
+                                  }).toList(),
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
           ),
         ));
@@ -270,8 +318,8 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
         return Center(
             child: Container(
           alignment: Alignment.center,
-          width: 38.0,
-          height: 33.0,
+          width: cellWidth,
+          height: cellHeight,
           decoration: BoxDecoration(
             color: cellData.color,
             borderRadius: BorderRadius.circular(6.0),
@@ -295,8 +343,8 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
           return Center(
               child: Container(
             alignment: Alignment.center,
-            width: 38.0,
-            height: 33.0,
+            width: cellWidth,
+            height: cellHeight,
             decoration: BoxDecoration(
               color: cellData.color,
               borderRadius:
@@ -314,8 +362,8 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
           return Center(
               child: Container(
             alignment: Alignment.center,
-            width: 38.0,
-            height: 33.0,
+            width: cellWidth,
+            height: cellHeight,
             decoration: BoxDecoration(
               color: sumColor,
               borderRadius:
@@ -333,8 +381,8 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
           return Center(
               child: Container(
             alignment: Alignment.center,
-            width: 38.0,
-            height: 33.0,
+            width: cellWidth,
+            height: cellHeight,
             decoration: BoxDecoration(
               color: cellData.color,
               borderRadius:
@@ -352,8 +400,8 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
           return Center(
               child: Container(
             alignment: Alignment.center,
-            width: 38.0,
-            height: 33.0,
+            width: cellWidth,
+            height: cellHeight,
             decoration: BoxDecoration(
               color: cellData.color,
               borderRadius:
@@ -368,8 +416,8 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
     return Center(
         child: Container(
       alignment: Alignment.center,
-      width: 38.0,
-      height: 33.0,
+      width: cellWidth,
+      height: cellHeight,
       decoration: BoxDecoration(
         color: backgroundColorOfImage,
         borderRadius:
