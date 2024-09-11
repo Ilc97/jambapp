@@ -57,11 +57,14 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
       cellHeight = 32.0;
       cellWidth = 34.5;
     } else if (height < 750) {
-      cellHeight = 33.0;
-      cellWidth = 36.0;
+      cellHeight = 33.5;
+      cellWidth = 36.5;
     } else if (height < 800) {
       cellHeight = 34.5;
-      cellWidth = 38.0;
+      cellWidth = 38.5;
+    } else if (height < 825) {
+      cellHeight = 35.0;
+      cellWidth = 39.5;
     } else if (height < 850) {
       topPadding = 15.0;
       cellHeight = 36.5;
